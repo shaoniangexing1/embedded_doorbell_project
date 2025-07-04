@@ -68,6 +68,13 @@ void doorbell_camera_to_rgb565(camera_fb_t *fb, uint8_t *rgb_buf)
     esp_jpeg_decode(&jpeg_cfg, &outimg);
 }
 
+
+/**
+ * 释放门铃相机的帧缓冲区
+ * 
+ * @param fb 指向相机帧缓冲区的指针当不再使用相机帧缓冲区时，通过此函数释放帧缓冲区资源
+ * 这是为了确保相机资源得到正确管理和释放，避免内存泄漏
+ */
 void doorbell_camera_release(camera_fb_t *fb)
 {
     esp_camera_fb_return(fb);

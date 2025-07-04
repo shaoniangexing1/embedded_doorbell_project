@@ -5,6 +5,10 @@
 #define MQTT_SERVER_IP "192.168.185.86"
 #define MQTT_PORT "1883"
 #define MQTT_SCHEMA "ws://"
+//websocket的端口
+#define WS_PORT "8000"
+#define WS_IMAGE_PATH "/ws/image"
+#define WS_SOUND_PATH "/ws/from_esp"
 
 #define LED_STRIP_GPIO_PIN 46
 

@@ -3,6 +3,12 @@
 #define TAG "Mqtt"
 #define MQTT_CMD_MAX_NUM 10
 
+//订阅的其他发布者主题
+#define MQTT_TOPIC_SUBSCRIBE_CMD "doorbell/cmd"
+
+//本地发布者主题
+#define MQTT_TOPIC_PUBLISH "doorbell/data"
+
 static esp_mqtt_client_handle_t client=NULL;
 //订阅的主题发来的指令
 static mqtt_cmd_t mqtt_cmd_list[MQTT_CMD_MAX_NUM] = {0};
@@ -14,7 +20,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     {
     case MQTT_EVENT_CONNECTED:
         // 建立连接，订阅web服务器主题doorbell/cmd
-        esp_mqtt_client_subscribe(client, "doorbell/cmd", 0);
+        esp_mqtt_client_subscribe(client, MQTT_TOPIC_SUBSCRIBE_CMD, 0);
         break;
     case MQTT_EVENT_DISCONNECTED:
         // 没有连接成功
@@ -88,7 +94,7 @@ void doorbell_mqtt_send_message(char *message)
 {
     // qos消息传递的可靠级别有三级 依次是低中高
     //作为发布者，发布数据信息，主题为doorbell/data
-    ESP_ERROR_CHECK(esp_mqtt_client_publish(client, "doorbell/data", message, 0, 0, 0));
+    ESP_ERROR_CHECK(esp_mqtt_client_publish(client, MQTT_TOPIC_PUBLISH, message, 0, 0, 0));
 }
 /**
  * @brief 注册mqtt回调指令

@@ -5,7 +5,7 @@
   "idf.openOcdConfigs": [
     "board/esp32s3-builtin.cfg"
   ],
-  "idf.portWin": "COM8",
+  "idf.portWin": "COM4",
   "idf.toolsPathWin": "D:\\ProgramFiles\\Espressif",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
@@ -67,6 +67,9 @@
     "doorbell_mqtt.h": "c",
     "doorbell_camera.h": "c",
     "esp_camera.h": "c",
-    "jpeg_decoder.h": "c"
+    "jpeg_decoder.h": "c",
+    "doorbell_wsclient.h": "c",
+    "esp_websocket_client.h": "c",
+    "esp_event.h": "c"
   }
 }
