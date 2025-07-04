@@ -70,6 +70,7 @@
     "jpeg_decoder.h": "c",
     "doorbell_wsclient.h": "c",
     "esp_websocket_client.h": "c",
-    "esp_event.h": "c"
+    "esp_event.h": "c",
+    "socket.h": "c"
   }
 }

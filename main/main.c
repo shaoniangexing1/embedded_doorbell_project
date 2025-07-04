@@ -7,6 +7,7 @@
 #include "doorbell_mqtt.h"
 #include "doorbell_camera.h"
 #include "doorbell_wsclient.h"
+#include "freertos/FreeRTOS.h"
 
 #include "string.h"
 #include "esp_log.h"
@@ -24,7 +25,7 @@ static LED_COLOR led_color = {
 static bool is_streaming=false;
 
 
-static void sound_streaming_task(void *arg){
+void sound_streaming_task(void *arg){
     void *sound_buf=malloc(2048);
     assert(sound_buf);
     while (is_streaming)
@@ -40,9 +41,8 @@ static void sound_streaming_task(void *arg){
     }
     free(sound_buf);
     vTaskDelete(NULL);
-
 }
-static void image_streaming_task(void *arg){
+void image_streaming_task(void *arg){
     while (is_streaming)
     {
         if (doorbell_wsclient_is_image_ready())
@@ -64,6 +64,7 @@ static void switch_callback(void *arg){
     {
         is_streaming=false;
         /* 关闭推流 */
+        doorbell_wsclint_stop();
     }else{
         is_streaming=true;
         /* 开启推流 */
@@ -71,11 +72,11 @@ static void switch_callback(void *arg){
         xTaskCreate(sound_streaming_task, "sound_task", 4096, NULL, 5, NULL);
         xTaskCreate(image_streaming_task, "image_task", 4096, NULL, 5, NULL);
     }
-    
 }
 
 static void upcoming_sound_callback(void *arg,void *data,size_t len){
-    doorbell_codec_write(data,len);
+    if(is_streaming)
+        doorbell_codec_write(data,len);
 }
 
 static void button_cb(void *button_handle, void *arg)
@@ -158,8 +159,4 @@ void app_main(void)
     };
     doorbell_mqtt_register_cmd(&cmd);
 
-
-
-
-    return;
 }

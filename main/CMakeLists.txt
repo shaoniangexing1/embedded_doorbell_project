@@ -5,5 +5,6 @@ idf_component_register(SRCS "main.c"
                             "doorbell_wifi.c"
                             "doorbell_mqtt.c"
                             "doorbell_camera.c"
+                            "doorbell_wsclient.c"
                     INCLUDE_DIRS "." 
                     EMBED_FILES "output.pcm")
