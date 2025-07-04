@@ -4,6 +4,8 @@
 #include "doorbell_led.h"
 #include "doorbell_codec.h"
 #include "doorbell_wifi.h"
+#include "doorbell_mqtt.h"
+#include "doorbell_camera.h"
 
 #include "string.h"
 #include "esp_log.h"
@@ -44,6 +46,13 @@ static void button_cb(void *button_handle, void *arg)
 
     }
 }
+
+void led_on(void *arg){
+    doorbell_led_on_off(2, led_color, LED_ON);
+}
+void led_off(void *arg){
+    doorbell_led_on_off(2, led_color, LED_OFF);
+}
 void app_main(void)
 {
 
@@ -70,6 +79,31 @@ void app_main(void)
     //      doorbell_codec_read(buf,2048);
     //      doorbell_codec_write(buf,2048);
     //  }
+
+    //mqtt测试
+    doorbell_mqtt_init();
+    mqtt_cmd_t cmd = {
+        .mqtt_cmd="on",
+        .mqtt_cmd_callback=led_on,
+        NULL};
+    doorbell_mqtt_register_cmd(&cmd);
+    memcpy(cmd.mqtt_cmd,"off",4);
+    cmd.mqtt_cmd_callback=led_off;
+    doorbell_mqtt_register_cmd(&cmd);
+
+    // 摄像头测试
+    doorbell_camera_init();
+    for (uint8_t i = 0; i < 5; i++)
+    {
+    camera_fb_t *fb = doorbell_camera_capture();
+        if (fb)
+        {
+            ESP_LOGI(TAG, "Picture capture done:%u",fb->len);
+            doorbell_camera_release(fb);
+        }
+    }
+    
+
 
     return;
 }

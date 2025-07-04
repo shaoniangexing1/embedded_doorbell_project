@@ -63,6 +63,10 @@
     "doorbell_wifi.h": "c",
     "manager.h": "c",
     "esp_system.h": "c",
-    "i2c.h": "c"
+    "i2c.h": "c",
+    "doorbell_mqtt.h": "c",
+    "doorbell_camera.h": "c",
+    "esp_camera.h": "c",
+    "jpeg_decoder.h": "c"
   }
 }
