@@ -17,10 +17,11 @@ void doorbell_button_init(void){
         .adc_channel=7,//gpio7
         .unit_id=ADC_UNIT_1//ADC1
     };
+    ESP_ERROR_CHECK(iot_button_new_adc_device(&button_cfg,&button_adc_cfg,&button_handle));
     button_adc_cfg.max=1740;//(3.3/2)*1.05=1.7325
     button_adc_cfg.min=1560;//(3.3/2)*0.95=1.5675
     button_adc_cfg.button_index=1;
-    ESP_ERROR_CHECK(iot_button_new_adc_device(&button_cfg,&button_adc_cfg,&button_handle));
+    
     ESP_ERROR_CHECK(iot_button_new_adc_device(&button_cfg,&button_adc_cfg,&brack_button_handle));
 }
 

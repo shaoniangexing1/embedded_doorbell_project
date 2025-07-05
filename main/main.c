@@ -22,25 +22,58 @@ static LED_COLOR led_color = {
     .blue = 0x0005,
     .green = 0x0005,
     .red = 0x0005};
-
+//按键事件判断
 static bool is_streaming=false;
+static bool is_lcd_streaming=false;
+// 定义一个指向camera_fb_t类型的指针fb，用于存储相机帧缓冲区的地址
+static camera_fb_t *fb=NULL;
 
+// 定义一个用于获取帧缓冲区的信号量句柄fb_get_sem
+static SemaphoreHandle_t fb_get_sem=NULL;
 
-void sound_streaming_task(void *arg){
-    void *sound_buf=malloc(2048);
-    assert(sound_buf);
+// 定义一个用于释放帧缓冲区的信号量句柄fb_release_sem
+static SemaphoreHandle_t fb_release_sem=NULL;
+
+static uint8_t *img_buf=NULL;
+
+static void lcd_streaming_task(void *arg){
+    while (1)
+    {
+        if (is_lcd_streaming||is_streaming)
+        {
+            fb=doorbell_camera_capture();
+            xSemaphoreGive(fb_get_sem);
+            if (is_lcd_streaming)
+            {
+                doorbell_camera_to_rgb565(fb,img_buf);
+                doorbell_lcd_st7789_display(img_buf);
+            }
+            if (is_streaming)
+            {
+                xSemaphoreTake(fb_release_sem,portMAX_DELAY);
+            }
+            doorbell_camera_release(fb);
+            
+        }else{
+            vTaskDelay(10);
+            continue;
+        }
+        
+    }
+    
+}
+static void sound_streaming_task(void *arg){
     while (is_streaming)
     {
         if (doorbell_wsclient_is_sound_ready())
         {
-            doorbell_codec_read(sound_buf,2048);
-            doorbell_wsclient_send_message_sound(sound_buf,2048);
-            
+            xSemaphoreTake(fb_release_sem,portMAX_DELAY);
+            doorbell_wsclient_send_message_sound(fb->buf,fb->len);
+            xSemaphoreGive(fb_get_sem);
         }else{
             vTaskDelay(5);
         }
     }
-    free(sound_buf);
     vTaskDelete(NULL);
 }
 void image_streaming_task(void *arg){
@@ -103,10 +136,15 @@ static void button_cb(void *button_handle, void *arg)
 
 //lcd背面按键回调
 static void button_back_cb(void *button_handle, void *arg){
-    if (arg==BUTTON_STATUS_SING)
-    {
-        //开启lcd屏幕显示
-        
+    if(is_lcd_streaming){
+        is_lcd_streaming=false;
+        //关闭背光
+        vTaskDelay(50);
+        doorbell_lcd_st7789_off();
+    }else{
+        //打开背光
+        doorbell_lcd_st7789_on();
+        is_lcd_streaming=true;
     }
     
 }
@@ -120,7 +158,7 @@ void app_main(void)
 
     doorbell_button_front_register(BUTTON_SINGLE_CLICK, button_cb, (void*)BUTTON_STATUS_SING);
     doorbell_button_front_register(BUTTON_LONG_PRESS_START, button_cb, (void*)BUTTON_STATUS_LONG);
-    doorbell_button_brck_register(BUTTON_SINGLE_CLICK, button_back_cb, (void*)BUTTON_STATUS_SING);
+    doorbell_button_brack_register(BUTTON_SINGLE_CLICK, button_back_cb, (void*)BUTTON_STATUS_SING);
 
     // led灯带测试最多1000个，越多占用空间越大
     doorbell_led_init();
@@ -164,25 +202,32 @@ void app_main(void)
     
     doorbell_wsclient_init();
 
-    // doorbell_wsclient_register_sound_callback(upcoming_sound_callback,NULL);
-
-    // mqtt_cmd_t cmd={
-    //     .mqtt_cmd_arg=NULL,
-    //     .mqtt_cmd="switch",
-    //     .mqtt_cmd_callback=switch_callback
-    // };
-    // doorbell_mqtt_register_cmd(&cmd);
-
+    img_buf = (uint8_t*) heap_caps_malloc(320*240*2,MALLOC_CAP_SPIRAM);
+    assert(img_buf);
     doorbell_lcd_st7789_init();
+    fb_get_sem=xSemaphoreCreateBinary();
+    fb_release_sem=xSemaphoreCreateBinary();
+    xTaskCreate(lcd_streaming_task,"lcd_streaming_task",4096,NULL,5,NULL);
 
-    doorbell_lcd_st7789_on();
-    while (1)
-    {
-        camera_fb_t *fb=doorbell_camera_capture();
-        doorbell_lcd_st7789_display(fb->buf);
-        doorbell_camera_release(fb);
+    doorbell_wsclient_register_sound_callback(upcoming_sound_callback,NULL);
+
+    mqtt_cmd_t cmd={
+        .mqtt_cmd_arg=NULL,
+        .mqtt_cmd="switch",
+        .mqtt_cmd_callback=switch_callback
+    };
+    doorbell_mqtt_register_cmd(&cmd);
+
+    // doorbell_lcd_st7789_init();
+
+    // doorbell_lcd_st7789_on();
+    // while (1)
+    // {
+    //     camera_fb_t *fb=doorbell_camera_capture();
+    //     doorbell_lcd_st7789_display(fb->buf);
+    //     doorbell_camera_release(fb);
         
-    }
+    // }
     
 
 
