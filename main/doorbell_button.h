@@ -13,4 +13,6 @@ void doorbell_button_init(void);
 
 void doorbell_button_front_register( button_event_t event,button_cb_t cb,void *arg);
 
+void doorbell_button_brack_register(button_event_t event, button_cb_t cb, void *arg);
+
 #endif /* __DOORBELL_BUTTON_H__ */

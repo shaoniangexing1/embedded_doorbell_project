@@ -51,7 +51,7 @@ dependencies:
       require: private
       version: '>=5.0'
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
     version: 1.3.0
   espressif/esp_websocket_client:
@@ -89,10 +89,11 @@ direct_dependencies:
 - espressif/button
 - espressif/esp32-camera
 - espressif/esp_codec_dev
+- espressif/esp_jpeg
 - espressif/esp_websocket_client
 - espressif/led_strip
 - espressif/qrcode
 - idf
-manifest_hash: b2802a5168190b24007adf473c0905e2093718b32ede86d04b822daa26637a25
+manifest_hash: d56ffa7f493f01eb28a3a110d890a7d2458158a483c75d5c955c5edf2b1bd2f7
 target: esp32s3
 version: 2.0.0

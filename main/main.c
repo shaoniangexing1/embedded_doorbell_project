@@ -7,6 +7,7 @@
 #include "doorbell_mqtt.h"
 #include "doorbell_camera.h"
 #include "doorbell_wsclient.h"
+#include "doorbell_lcd_st7789.h"
 #include "freertos/FreeRTOS.h"
 
 #include "string.h"
@@ -79,6 +80,7 @@ static void upcoming_sound_callback(void *arg,void *data,size_t len){
         doorbell_codec_write(data,len);
 }
 
+//lcd面板下方按键回调函数
 static void button_cb(void *button_handle, void *arg)
 {
     // ESP_LOGI(TAG, "button event: %s", (char*)arg);
@@ -99,6 +101,17 @@ static void button_cb(void *button_handle, void *arg)
     }
 }
 
+//lcd背面按键回调
+static void button_back_cb(void *button_handle, void *arg){
+    if (arg==BUTTON_STATUS_SING)
+    {
+        //开启lcd屏幕显示
+        
+    }
+    
+}
+
+
 void app_main(void)
 {
 
@@ -107,6 +120,7 @@ void app_main(void)
 
     doorbell_button_front_register(BUTTON_SINGLE_CLICK, button_cb, (void*)BUTTON_STATUS_SING);
     doorbell_button_front_register(BUTTON_LONG_PRESS_START, button_cb, (void*)BUTTON_STATUS_LONG);
+    doorbell_button_brck_register(BUTTON_SINGLE_CLICK, button_back_cb, (void*)BUTTON_STATUS_SING);
 
     // led灯带测试最多1000个，越多占用空间越大
     doorbell_led_init();
@@ -150,13 +164,26 @@ void app_main(void)
     
     doorbell_wsclient_init();
 
-    doorbell_wsclient_register_sound_callback(upcoming_sound_callback,NULL);
+    // doorbell_wsclient_register_sound_callback(upcoming_sound_callback,NULL);
 
-    mqtt_cmd_t cmd={
-        .mqtt_cmd_arg=NULL,
-        .mqtt_cmd="switch",
-        .mqtt_cmd_callback=switch_callback
-    };
-    doorbell_mqtt_register_cmd(&cmd);
+    // mqtt_cmd_t cmd={
+    //     .mqtt_cmd_arg=NULL,
+    //     .mqtt_cmd="switch",
+    //     .mqtt_cmd_callback=switch_callback
+    // };
+    // doorbell_mqtt_register_cmd(&cmd);
+
+    doorbell_lcd_st7789_init();
+
+    doorbell_lcd_st7789_on();
+    while (1)
+    {
+        camera_fb_t *fb=doorbell_camera_capture();
+        doorbell_lcd_st7789_display(fb->buf);
+        doorbell_camera_release(fb);
+        
+    }
+    
+
 
 }

@@ -50,4 +50,23 @@ typedef enum BUTTON_STATUS
 #define CAM_PIN_HREF 39
 #define CAM_PIN_PCLK 34
 
+//LCD引脚
+#define LCD_PIN_BG 40
+#define LCD_PIN_DC 45
+#define LCD_PIN_RST 16
+    //spi
+#define LCD_PIN_SPI_CS 21
+#define LCD_PIN_SPI_SCLK 47
+#define LCD_PIN_SPI_MOSI 48
+#define LCD_PIN_SPI_MISO 18
+    //I2C 触屏
+#define LCD_PIN_I2C_SCL 1
+#define LCD_PIN_I2C_SDA 0
+#define LCD_PIN_GT_INT 42
+
+
+
+
+
+
 #endif /* __DOORBELL_CONFIG_H__ */

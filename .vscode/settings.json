@@ -71,6 +71,20 @@
     "doorbell_wsclient.h": "c",
     "esp_websocket_client.h": "c",
     "esp_event.h": "c",
-    "socket.h": "c"
+    "socket.h": "c",
+    "gpio.h": "c",
+    "esp_lcd_panel_io.h": "c",
+    "esp_lcd_panel_vendor.h": "c",
+    "doorbell_lcd_st7789.h": "c",
+    "spi_master.h": "c",
+    "esp_lcd_panel_ops.h": "c",
+    "freertos.h": "c",
+    "esp_lcd_io_i2c.h": "c",
+    "esp_lcd_io_spi.h": "c",
+    "esp_lcd_panel_dev.h": "c",
+    "esp_lcd_panel_st7789.h": "c",
+    "esp_heap_caps.h": "c",
+    "ranges": "c",
+    "qrcode.h": "c"
   }
 }
