@@ -27,7 +27,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         break;
     case MQTT_EVENT_SUBSCRIBED:
         // 订阅成功，尝试发送测试消息
-        doorbell_mqtt_send_message("{\"status\":\"ready\"}");
+        doorbell_mqtt_send_message("{\"status\":\"ready\",\"version\":\""OTA_VER"\"}");
         break;
     case MQTT_EVENT_UNSUBSCRIBED:
         // 没有连接成功

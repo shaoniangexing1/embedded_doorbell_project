@@ -67,6 +67,6 @@ typedef enum BUTTON_STATUS
 
 
 
-
+#define OTA_VER "1.0.0"
 
 #endif /* __DOORBELL_CONFIG_H__ */
